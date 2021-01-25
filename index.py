@@ -72,6 +72,7 @@ def process(subsystem,
         data_path = dqm.fetch_run(data_series, data_sample, data_run)
         ref_path = dqm.fetch_run(ref_series, ref_sample, ref_run)
 
+    
     # Get config and results/plugins directories
     results_dir = os.path.join(VARS['PUBLIC'], 'results')
     plugin_dir = VARS['PLUGINS']
@@ -94,8 +95,14 @@ def process(subsystem,
         r['json_path'] = relativize(r['json_path'])
         r['png_path'] = relativize(r['png_path'])
 
-    return {'items': results}
-
+    #return {'items': results}
+    return {'items': [config_dir, subsystem,
+                                   data_series, data_sample,
+                                    data_run, data_path,
+                                    ref_series, ref_sample,
+                                    ref_run, ref_path,
+                                    results_dir,
+                                    plugin_dir]}
 
 def get_subsystems():
     names = autodqm.cfg.list_subsystems(VARS['CONFIG'])

@@ -103,15 +103,42 @@ def compile_histpairs(config_dir, subsystem,
         # Get parent directory of hist
         gdir = str(hconf["path"].split(h)[0])
 
+
+        ## data run here is passed in as the whole filename because if i don't, it picks up the first thing with the same run number
+        data_run = data_run.split('_')[-1][-6:]
+        ref_run = ref_run.split('_')[-1][-6:]
+
         data_dirname = "{0}{1}".format(main_gdir.format(data_run), gdir)
         ref_dirname = "{0}{1}".format(main_gdir.format(ref_run), gdir)
+
+
+#         if data_dirname[-1] == '/':
+#             data_dirname = data_dirname[:-1]
+#         if ref_dirname[-1] == '/':
+#             ref_dirname = ref_dirname[:-1]
 
         data_dir = data_file.GetDirectory(data_dirname)
         ref_dir = ref_file.GetDirectory(ref_dirname)
 
+        
+        # data_dirname = 'DQMData/Run 320009'
+        # ref_dirname = 'DQMData/Run 320010'
+        # 
+        # 
+        # data_dir = data_file.GetDirectory(data_dirname)
+        # ref_dir = ref_file.GetDirectory(ref_dirname)
+        # 
+        # tmp = list()
+        # for i in data_dir.GetListOfKeys():
+        #     tmp.append(i.GetName())
+        # 
+        # raise error('list {}'.format(str(tmp)))
+
         if not data_dir:
             raise error(
-                "Subsystem dir {0} not found in data root file".format(data_dirname))
+                #'list {}'.format(str(tmp))
+                "Subsystem dir {0} not found in data root file".format(data_dirname)
+            )
         if not ref_dir:
             raise error(
                 "Subsystem dir {0} not found in ref root file".format(ref_dirname))

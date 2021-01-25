@@ -13,7 +13,8 @@ from requests_futures.sessions import FuturesSession
 TIMEOUT = 5
 
 BASE_URL = 'https://cmsweb.cern.ch'
-DQM_URL = 'https://cmsweb.cern.ch/dqm/offline/data/browse/ROOT/OfflineData/'
+#DQM_URL = 'https://cmsweb.cern.ch/dqm/offline/data/browse/ROOT/OfflineData/'
+DQM_URL = 'https://cmsweb.cern.ch/dqm/offline/data/browse/ROOT/OnlineData/'
 CA_URL = 'https://cafiles.cern.ch/cafiles/certificates/CERN%20Root%20Certification%20Authority%202.crt'
 
 # The following are appended to the db dir
@@ -195,6 +196,9 @@ def _parse_dqm_page(content):
         size = int(td_strs[1]) if td_strs[1] != '-' else None
         date = td_strs[2]
         name = _parse_run_full_name(full_name) if size else full_name[:-1]
+        
+        if name == None:
+            continue
 
         dqm_rows.append(DQMRow(name, full_name, url, size, date))
 
@@ -208,10 +212,26 @@ def _parse_run_full_name(full_name):
     DQM_V0001_R000316293__ZeroBias__Run2018A-PromptReco-v2__DQMIO.root
     => 316293
     """
-    name = full_name.split('_')[2][1:]
-    return str(int(name))
-
-
+    #name = full_name.split('_')[2][1:]
+    #return str(int(name))
+    
+    ## with Online data, the names tend to be like 
+    ## DQM_V0001_TrackingHLTBeamspotStream_R000319993.root
+    ## DQM_V0006_GEM_R000329995.root
+    ## so i will split by ., and take the [0][-9:] which returns only the numbers before .root 
+    
+    # tmp = full_name.split('.')[0]
+    # tmp = tmp.split('_')
+    # name = str(int(tmp[-1][-9:])) + str(tmp[-2])
+    tmp = full_name.split('.')
+    name = full_name.split('.')[0][-9:]
+    
+    #return tmp[0]#str(int(name))
+    if 'L1T' in tmp[0] and 'EMU' not in tmp[0]:
+        return tmp[0]#str(int(name))
+    else:
+        return None
+    
 def _get_cern_ca(path):
     """Download the CERN ROOT CA to the specified path."""
     _try_makedirs(os.path.dirname(path))
